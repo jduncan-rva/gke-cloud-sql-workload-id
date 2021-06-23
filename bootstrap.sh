@@ -68,7 +68,7 @@ create_psql_sa () {
   ARTIFACTS+=("IAM Service Account: $APP_NAME-psql-gsa\n")
 
   gcloud projects add-iam-policy-binding $PROJECT \
-  --member serviceAccount:$APP_NAME-psql-gsa@dpn-sql-exp.iam.gserviceaccount.com \
+  --member serviceAccount:$APP_NAME-psql-gsa@$PROJECT.iam.gserviceaccount.com \
   --role roles/cloudsql.instanceUser
 
   gcloud iam service-accounts add-iam-policy-binding \
