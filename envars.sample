@@ -1,0 +1,9 @@
+export PROJECT=my-project
+export REGION=us-central1
+export ZONE=us-central1-a
+export APP_NAME=sample
+export DB_USER=postgres 
+export DB_PASS=k8FixjcynEFF7cvB
+export GCP_BILLING_ACCT=XXXXX-XXXXX-XXXXX
+export GCP_FOLDER=XXXXXXXXXXXX
+export GCP_ORG=XXXXXXXXXXXX

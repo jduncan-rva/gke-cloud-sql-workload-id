@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+  integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+  crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <title>Workload Identity and SQL Auth Proxy Example</title>
+</head>
+<body>
+<div class="container">
+  <div class="col-md">
+    <h1>Random Database Retrieval Example</h1>
+    <p>
+      This is a query I'm running against a database named <code>sample-app</code>
+      in a Postgres 13 Cloud SQL instance named <code>sample-db</code>. Here is
+      the code I'm running:
+    </p>
+    <pre>
+        <code>
+            conn = psycopg2.connect(dbname="sample-app", user="sample-psql-gsa@dpn-sql-exp.iam", sslmode="disable",
+            host="localhost")
+            cur = conn.cursor()
+            cur.execute("""select name, membercost from facilities""")
+            
+            rows = cur.fetchall()
+            
+            return render_template('index.html', rows=rows)
+        </code>
+      </pre>
+    <p>
+      It's running in a simple Flask instance. Notice how the username is
+      specified, but that's all. It's the same IAM service account we're using to
+      authenticate with the Cloud SQL instance and also using as the service
+      account to run this entire Pod.
+    </p>
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Item Name</th>
+          <th scope="col">Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <th scope="row">{{row[0]}}</th>
+          <td>{{ row[1] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+
+</html>

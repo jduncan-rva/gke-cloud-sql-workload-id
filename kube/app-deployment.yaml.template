@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $APP_NAME-deployment
+  namespace: $APP_NAME
+spec:
+  selector:
+    matchLabels:
+      app: $APP_NAME-app
+  template:
+    metadata:
+      labels:
+        app: $APP_NAME-app
+    spec:
+      serviceAccountName: $APP_NAME-psql-ksa
+      containers:
+      - name: $APP_NAME-app
+        image: $REGION-docker.pkg.dev/$PROJECT/$APP_NAME-repo/$APP_NAME-app:v1
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.23.0
+        command: 
+          - "/cloud_sql_proxy"
+          - "-enable_iam_login"
+          - "-instances=$PROJECT:$REGION:$APP_NAME-db=tcp:5432"
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu:    "1"
