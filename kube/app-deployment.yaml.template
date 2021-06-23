@@ -15,7 +15,7 @@ spec:
       serviceAccountName: $APP_NAME-psql-ksa
       containers:
       - name: $APP_NAME-app
-        image: $REGION-docker.pkg.dev/$PROJECT/$APP_NAME-repo/$APP_NAME-app:v1
+        image: $REGION-docker.pkg.dev/$PROJECT/$APP_NAME-repo/$APP_NAME-app:v14
       - name: cloud-sql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.23.0
         command: 
