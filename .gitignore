@@ -1,3 +1,4 @@
 *.json
 envars
 *.yaml
+grants.sql

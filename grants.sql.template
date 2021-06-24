@@ -1,3 +1,3 @@
 /* This is obviously not a production-grade permsission set */
 
-GRANT ALL PRIVILEGES ON DATABASE "$APP_NAME-app" TO "$APP_NAME-psql-gsa@$PROJECT.iam";
+GRANT SELECT ON TABLE facilities TO "$APP_NAME-psql-gsa@$PROJECT.iam";

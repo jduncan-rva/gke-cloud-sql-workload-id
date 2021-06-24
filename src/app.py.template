@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route('/')
 def index():
 
-  conn = psycopg2.connect(dbname="sample-app", user="sample-psql-gsa@$PROJECT", sslmode="disable", host="localhost")
+  conn = psycopg2.connect(dbname="$APP_NAME-app", user="$APP_NAME-psql-gsa@$PROJECT.iam", sslmode="disable", host="localhost")
   cur = conn.cursor()
   cur.execute("""select name, membercost from facilities""")
 

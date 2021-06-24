@@ -41,6 +41,7 @@ create_psql () {
   echo "STEP 2: Creating $APP_NAME-db Postgres 13 instance"
   gcloud sql instances create $APP_NAME-db --database-version POSTGRES_13 \
   --cpu 4 --memory 26GB --storage-size 100GB \
+  --root-password $DB_PASS \
   --database-flags cloudsql.iam_authentication=on \
   --availability-type ZONAL \
   --region us-central1
@@ -48,7 +49,7 @@ create_psql () {
   ARTIFACTS+=("Cloud SQL Instace: $APP_NAME-db\n")
 
   gcloud sql users create $APP_NAME-psql-gsa@$PROJECT.iam \
-  --type cloud_iam_user \
+  --type cloud_iam_service_account \
   --instance $APP_NAME-db
 
   ARTIFACTS+=("Cloud SQL User: $APP_NAME-psql-gsa@$PROJECT.iam\n")
@@ -69,7 +70,7 @@ create_psql_sa () {
 
   gcloud projects add-iam-policy-binding $PROJECT \
   --member serviceAccount:$APP_NAME-psql-gsa@$PROJECT.iam.gserviceaccount.com \
-  --role roles/cloudsql.instanceUser
+  --role roles/cloudsql.client
 
   gcloud iam service-accounts add-iam-policy-binding \
   --role roles/iam.workloadIdentityUser \
@@ -152,7 +153,7 @@ import_sql_data () {
   echo "STEP 7: Import SQL data into $APP_NAME-db Cloud SQL instance"
   gsutil mb gs://sqldata-$PROJECT-$APP_NAME
   gsutil cp clubdata.sql gs://sqldata-$PROJECT-$APP_NAME
-  gsutil cp grants.sql gs://sqldata-$PROJECT-$APP_NAME
+  # gsutil cp grants.sql gs://sqldata-$PROJECT-$APP_NAME
 
   SQL_SVC_ACCT=$(gcloud sql instances describe $APP_NAME-db --format 'value( serviceAccountEmailAddress)')
   
@@ -161,7 +162,8 @@ import_sql_data () {
   --role roles/storage.objectViewer
 
   gcloud sql import sql $APP_NAME-db gs://sqldata-$PROJECT-$APP_NAME/clubdata.sql --database $APP_NAME-app 
-  gcloud sql import sql $APP_NAME-db gs://sqldata-$PROJECT-$APP_NAME/grants.sql --database $APP_NAME-app 
+  
+  gcloud sql import sql $APP_NAME-db gs://sqldata-$PROJECT-$APP_NAME/grants.sql --database $APP_NAME-app
 }
 
 configure_gke () {
@@ -172,6 +174,7 @@ configure_gke () {
   kubectl apply -n $APP_NAME -f kube/namespace.yaml
   kubectl apply -n $APP_NAME -f kube/serviceaccounts.yaml
   kubectl apply -n $APP_NAME -f kube/wi-test.yaml
+  kubectl apply -n $APP_NAME -f kube/wi-test-no-sa.yaml
   kubectl apply -n $APP_NAME -f kube/app-deployment.yaml
 }
 
