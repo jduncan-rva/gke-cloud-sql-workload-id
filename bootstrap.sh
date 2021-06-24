@@ -70,7 +70,7 @@ create_psql_sa () {
 
   gcloud projects add-iam-policy-binding $PROJECT \
   --member serviceAccount:$APP_NAME-psql-gsa@$PROJECT.iam.gserviceaccount.com \
-  --role roles/cloudsql.client
+  --role roles/cloudsql.client --role roles/cloudsql.instanceUser
 
   gcloud iam service-accounts add-iam-policy-binding \
   --role roles/iam.workloadIdentityUser \
